@@ -6,7 +6,7 @@
   <title>Portail Prévention PACA — Intégration Grist</title>
   <style>
     :root {
-      --mask-height: 30px;   /* hauteur du bandeau blanc qui masque le haut de Grist */
+      --mask-height: 30px;
       --bg: #ffffff;
       --frame-bg: #f5f7fb;
       --radius: 14px;
@@ -15,12 +15,17 @@
     }
 
     * { box-sizing: border-box; }
+
     html, body {
       margin: 0;
       width: 100%;
       height: 100%;
       background: var(--bg);
       font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+    }
+
+    body.modal-open {
       overflow: hidden;
     }
 
@@ -38,7 +43,6 @@
       background: var(--frame-bg);
     }
 
-    /* Le conteneur est décalé vers le haut pour “manger” la zone à masquer */
     .frame-wrap {
       position: absolute;
       top: calc(var(--mask-height) * -1);
@@ -57,7 +61,6 @@
       background: #fff;
     }
 
-    /* Bandeau de masquage */
     .mask {
       position: absolute;
       top: 0;
@@ -69,7 +72,101 @@
       pointer-events: none;
     }
 
-    /* Option “carte” si tu veux un rendu plus propre hors Google Sites */
+    .modal-btn {
+      position: absolute;
+      top: 2px;
+      right: 14px;
+      z-index: 30;
+      height: 26px;
+      padding: 0 14px;
+      border: 1px solid rgba(27,57,106,.18);
+      border-radius: 8px;
+      background: #ffffff;
+      color: #1b396a;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      line-height: 1;
+    }
+
+    .modal-btn:hover {
+      background: #f5f7fb;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      background: rgba(255,255,255,.92);
+    }
+
+    .modal-overlay.open {
+      display: block;
+    }
+
+    .modal-panel {
+      position: absolute;
+      inset: 12px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.18);
+      overflow: hidden;
+      border: 1px solid rgba(27,57,106,.10);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 4px;
+      right: 14px;
+      z-index: 40;
+      height: 30px;
+      padding: 0 14px;
+      border: 1px solid rgba(27,57,106,.18);
+      border-radius: 8px;
+      background: #ffffff;
+      color: #1b396a;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      background: #f5f7fb;
+    }
+
+    .modal-frame-wrap {
+      position: absolute;
+      top: -30px;
+      left: 0;
+      width: 100%;
+      height: calc(100% + 30px);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .modal-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    .modal-mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      background: #fff;
+      z-index: 20;
+      pointer-events: none;
+    }
+
     .card-mode .frame-shell {
       padding: 0;
       background: linear-gradient(180deg, #eef3fb 0%, #f7f9fd 100%);
@@ -93,29 +190,10 @@
       border-top-right-radius: var(--radius);
     }
 
-    /* Mobile */
-    @media (max-width: 768px) {
-      :root { --mask-height: 40px; }
-      .card-mode .frame-wrap {
-        top: calc(var(--mask-height) * -1 + 8px);
-        left: 8px;
-        width: calc(100% - 16px);
-        height: calc(100% + var(--mask-height) - 16px);
-      }
-      .card-mode .mask {
-        top: 8px;
-        left: 8px;
-        width: calc(100% - 16px);
-      }
+    .js .fallback {
+      display: none;
     }
 
-    /* Très petits écrans */
-    @media (max-width: 480px) {
-      :root { --mask-height: 36px; }
-    }
-
-    /* Masque le message si JS actif */
-    .js .fallback { display: none; }
     .fallback {
       display: grid;
       place-items: center;
@@ -125,7 +203,40 @@
       text-align: center;
       color: #1b396a;
     }
-    .fallback a { color: #1b396a; }
+
+    @media (max-width: 768px) {
+      .modal-btn {
+        right: 8px;
+        padding: 0 10px;
+        font-size: 12px;
+      }
+
+      .modal-panel {
+        inset: 8px;
+        border-radius: 10px;
+      }
+
+      .modal-close {
+        right: 8px;
+        top: 3px;
+        height: 28px;
+        padding: 0 10px;
+        font-size: 12px;
+      }
+
+      .card-mode .frame-wrap {
+        top: calc(var(--mask-height) * -1 + 8px);
+        left: 8px;
+        width: calc(100% - 16px);
+        height: calc(100% + var(--mask-height) - 16px);
+      }
+
+      .card-mode .mask {
+        top: 8px;
+        left: 8px;
+        width: calc(100% - 16px);
+      }
+    }
   </style>
 </head>
 <body>
@@ -134,45 +245,76 @@
       <div class="frame-wrap">
         <iframe id="gristFrame" title="Portail Grist intégré" allow="fullscreen"></iframe>
       </div>
+
       <div class="mask" aria-hidden="true"></div>
+
+      <button id="openAdjustModal" class="modal-btn" type="button">
+        Ajustement
+      </button>
     </div>
 
     <div class="fallback">
       <div>
         <p><strong>Chargement de l’intégration…</strong></p>
-        <p>Si rien ne s’affiche, vérifie l’URL Grist dans le script.</p>
+        <p>Si rien ne s’affiche, vérifie les URL Grist dans le script.</p>
       </div>
+    </div>
+  </div>
+
+  <div id="adjustModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Fenêtre d’ajustement">
+      <button id="closeAdjustModal" class="modal-close" type="button">
+        Fermer
+      </button>
+
+      <div class="modal-frame-wrap">
+        <iframe
+          id="adjustFrame"
+          class="modal-frame"
+          title="Page d’ajustement"
+          allow="fullscreen"></iframe>
+      </div>
+
+      <div class="modal-mask" aria-hidden="true"></div>
     </div>
   </div>
 
   <script>
     document.documentElement.classList.add('js');
 
-    /*
-      ===============================
-      PARAMÈTRES À ADAPTER
-      ===============================
-    */
     const CONFIG = {
-      // Colle ici l’URL de ta page Grist publiée ou partageable
-      gristUrl: 'https://docs.getgrist.com/aSw3QxcECnsx/Suivi-heures-travaillees/p/15',
+      // Mets ici ton wrapper principal déjà publié
+      gristUrl: 'https://preventionpaca.github.io/planning-G205/g205-1.html',
 
-      // true = rendu bord à bord, idéal pour Google Sites
-      // false = rendu “carte” avec marges et ombre, utile hors Sites
+      // true = rendu bord à bord, idéal dans Google Sites
       edgeToEdge: true,
 
-      // Ajuste la zone masquée selon ce que tu veux cacher en haut
+      // hauteur réelle du bandeau blanc principal
       maskHeight: 30,
 
-      // Ajoute automatiquement embed=true si absent
+      // ajoute embed=true si absent
       forceEmbed: true,
 
-      // Enlève éventuellement d’autres paramètres parasites
-      cleanParams: false
+      // nettoyage éventuel des paramètres
+      cleanParams: false,
+
+      // URL affichée dans la modale Ajustement
+      adjustUrl: 'https://docs.getgrist.com/aSw3QxcECnsx/Suivi-heures-travaillees/p/14?embed=true',
+
+      // hauteur du bandeau blanc dans la modale
+      adjustMaskHeight: 30
     };
 
     const app = document.getElementById('app');
     const frame = document.getElementById('gristFrame');
+
+    const adjustModal = document.getElementById('adjustModal');
+    const openAdjustModalBtn = document.getElementById('openAdjustModal');
+    const closeAdjustModalBtn = document.getElementById('closeAdjustModal');
+    const adjustFrame = document.getElementById('adjustFrame');
+    const modalFrameWrap = document.querySelector('.modal-frame-wrap');
+    const modalMask = document.querySelector('.modal-mask');
+
     document.documentElement.style.setProperty('--mask-height', CONFIG.maskHeight + 'px');
 
     if (!CONFIG.edgeToEdge) {
@@ -196,7 +338,44 @@
       return url.toString();
     }
 
+    function applyModalMaskHeight(px) {
+      modalFrameWrap.style.top = '-' + px + 'px';
+      modalFrameWrap.style.height = 'calc(100% + ' + px + 'px)';
+      modalMask.style.height = px + 'px';
+    }
+
     frame.src = buildUrl(CONFIG.gristUrl);
+    applyModalMaskHeight(CONFIG.adjustMaskHeight);
+
+    function openAdjustModal() {
+      adjustFrame.src = buildUrl(CONFIG.adjustUrl);
+      adjustModal.classList.add('open');
+      adjustModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeAdjustModal() {
+      adjustModal.classList.remove('open');
+      adjustModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      adjustFrame.src = '';
+    }
+
+    openAdjustModalBtn.addEventListener('click', openAdjustModal);
+    closeAdjustModalBtn.addEventListener('click', closeAdjustModal);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && adjustModal.classList.contains('open')) {
+        closeAdjustModal();
+      }
+    });
+
+    // Aucun clic au travers, et pas de fermeture hors fenêtre
+    adjustModal.addEventListener('click', (e) => {
+      if (e.target === adjustModal) {
+        e.preventDefault();
+      }
+    });
   </script>
 </body>
 </html>
