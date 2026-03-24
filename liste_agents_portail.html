@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Liste des agents — consultation</title>
+  <title>Liste des agents Bureau G205 — consultation</title>
   <style>
     :root{--bg:#f4f7fb;--card:#fff;--text:#173357;--muted:#607492;--line:#d7e1ef;--accent:#1b396a;--accent2:#3f72af}
     *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
@@ -28,13 +28,12 @@
     ];
   </script>
   <header class="hero">
-    <h1>Liste des agents</h1>
-    <div class="sub">Page de consultation centrale. .</div>
+    <h1>Liste des agents bureau G205</h1>
+    <div class="sub">Page de consultation de M.Stéphane Devin, Proviseur.</div>
   </header>
   <div class="wrap">
     <div class="toolbar">
-      <a class="btn" href="index_portail_github.html">Accueil</a>
-      <a class="btn primary" href="admin_portail.html">Dashboard admin</a>
+    
     </div>
     <div class="grid" id="grid"></div>
   </div>
@@ -43,7 +42,7 @@
     grid.innerHTML = AGENTS.map(a => `
       <section class="card">
         <div class="name">${a.name}</div>
-        <div class="muted">Accès en consultation via le wrapper GitHub. Les actions d'écriture restent ouvertes depuis le bouton Ajustement de la page agent.</div>
+        <div class="muted"> Consultation du planning : vue hebdomadaire avec bulles d'informations hebdobadaires et annuelles. Export ou impression de la synthèse et du planning.
         <div class="actions"><a class="btn primary" href="${a.page}">Ouvrir la page</a></div>
       </section>
     `).join('');
