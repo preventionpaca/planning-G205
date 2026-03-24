@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portail agent — modèle</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--text:#173357;--muted:#607492;--line:#d7e1ef;--accent:#1b396a;--accent2:#3f72af}
+    *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .top{padding:16px 18px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+    .top h1{margin:0 0 6px;font-size:26px}.sub{opacity:.94}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;padding:14px 18px;background:#fff;border-bottom:1px solid var(--line)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:12px;padding:10px 14px;font-weight:700;text-decoration:none;border:1px solid var(--line);color:var(--text);background:#fff}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+    .frameWrap{padding:16px;height:calc(100vh - 126px)}
+    iframe{width:100%;height:100%;border:0;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(23,51,87,.08)}
+  </style>
+</head>
+<body>
+  <script>
+    const CONFIG = {
+      agentName: 'Morise',
+      consultationUrl: 'https://docs.getgrist.com/aSw3QxcECnsx/Suivi-heures-travaillees/p/12',
+      adjustmentUrl: 'https://docs.getgrist.com/aSw3QxcECnsx/Suivi-heures-travaillees/p/13?style=singlePage',
+      gristFullUrl: 'https://docs.getgrist.com/aSw3QxcECnsx/Suivi-heures-travaillees',
+      homeUrl: 'index_portail_github.html',
+      listUrl: 'liste_agents_portail.html'
+    };
+  </script>
+  <header class="top">
+    <h1 id="title">Portail agent</h1>
+    <div class="sub">Consultation propre depuis GitHub. Le bouton Ajustement bascule vers Grist privé en mode page unique.</div>
+  </header>
+  <nav class="toolbar">
+    <a class="btn" href="index_portail_github.html">Accueil</a>
+    <a class="btn" href="liste_agents_portail.html">Liste des agents</a>
+    <a class="btn primary" id="openAdjust" href="#">Faire un ajustement</a>
+    <a class="btn" id="openGristFull" href="#">Ouvrir Grist</a>
+  </nav>
+  <div class="frameWrap">
+    <iframe id="viewFrame" title="Dashboard agent"></iframe>
+  </div>
+  <script>
+    document.getElementById('title').textContent = 'Portail agent — ' + CONFIG.agentName;
+    document.getElementById('viewFrame').src = CONFIG.consultationUrl;
+    document.getElementById('openAdjust').href = CONFIG.adjustmentUrl;
+    document.getElementById('openAdjust').target = '_blank';
+    document.getElementById('openGristFull').href = CONFIG.gristFullUrl;
+    document.getElementById('openGristFull').target = '_blank';
+  </script>
+</body>
+</html>
