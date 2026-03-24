@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portail Prévention PACA — Intégration Grist</title>
+  <style>
+    :root {
+      --mask-height: 30px;
+      --bg: #ffffff;
+      --frame-bg: #f5f7fb;
+      --radius: 14px;
+      --shadow: 0 10px 28px rgba(0,0,0,.10);
+      --border: 1px solid rgba(27,57,106,.10);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    .app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    .frame-shell {
+      position: absolute;
+      inset: 0;
+      background: var(--frame-bg);
+    }
+
+    .frame-wrap {
+      position: absolute;
+      top: calc(var(--mask-height) * -1);
+      left: 0;
+      width: 100%;
+      height: calc(100% + var(--mask-height));
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    .mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--mask-height);
+      background: var(--bg);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .modal-btn {
+      position: absolute;
+      top: 2px;
+      right: 14px;
+      z-index: 30;
+      height: 26px;
+      padding: 0 14px;
+      border: 1px solid rgba(27,57,106,.18);
+      border-radius: 8px;
+      background: #ffffff;
+      color: #1b396a;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      line-height: 1;
+    }
+
+    .modal-btn:hover {
+      background: #f5f7fb;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      background: rgba(255,255,255,.92);
+    }
+
+    .modal-overlay.open {
+      display: block;
+    }
+
+    .modal-panel {
+      position: absolute;
+      inset: 12px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.18);
+      overflow: hidden;
+      border: 1px solid rgba(27,57,106,.10);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 4px;
+      right: 14px;
+      z-index: 40;
+      height: 30px;
+      padding: 0 14px;
+      border: 1px solid rgba(27,57,106,.18);
+      border-radius: 8px;
+      background: #ffffff;
+      color: #1b396a;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      background: #f5f7fb;
+    }
+
+    .modal-frame-wrap {
+      position: absolute;
+      top: -30px;
+      left: 0;
+      width: 100%;
+      height: calc(100% + 30px);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .modal-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    .modal-mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      background: #fff;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .card-mode .frame-shell {
+      padding: 0;
+      background: linear-gradient(180deg, #eef3fb 0%, #f7f9fd 100%);
+    }
+
+    .card-mode .frame-wrap {
+      top: calc(var(--mask-height) * -1 + 12px);
+      left: 12px;
+      width: calc(100% - 24px);
+      height: calc(100% + var(--mask-height) - 24px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: var(--border);
+    }
+
+    .card-mode .mask {
+      top: 12px;
+      left: 12px;
+      width: calc(100% - 24px);
+      border-top-left-radius: var(--radius);
+      border-top-right-radius: var(--radius);
+    }
+
+    .js .fallback {
+      display: none;
+    }
+
+    .fallback {
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      padding: 24px;
+      text-align: center;
+      color: #1b396a;
+    }
+
+    @media (max-width: 768px) {
+      .modal-btn {
+        right: 8px;
+        padding: 0 10px;
+        font-size: 12px;
+      }
+
+      .modal-panel {
+        inset: 8px;
+        border-radius: 10px;
+      }
+
+      .modal-close {
+        right: 8px;
+        top: 3px;
+        height: 28px;
+        padding: 0 10px;
+        font-size: 12px;
+      }
+
+      .card-mode .frame-wrap {
+        top: calc(var(--mask-height) * -1 + 8px);
+        left: 8px;
+        width: calc(100% - 16px);
+        height: calc(100% + var(--mask-height) - 16px);
+      }
+
+      .card-mode .mask {
+        top: 8px;
+        left: 8px;
+        width: calc(100% - 16px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <div class="frame-shell">
+      <div class="frame-wrap">
+        <iframe id="gristFrame" title="Portail Grist intégré" allow="fullscreen"></iframe>
+      </div>
+
+      <div class="mask" aria-hidden="true"></div>
+
+      <button id="openAdjustModal" class="modal-btn" type="button">
+        Ajustement
+      </button>
+    </div>
+
+    <div class="fallback">
+      <div>
+        <p><strong>Chargement de l’intégration…</strong></p>
+        <p>Si rien ne s’affiche, vérifie les URL Grist dans le script.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="adjustModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Fenêtre d’ajustement">
+      <button id="closeAdjustModal" class="modal-close" type="button">
+        Fermer
+      </button>
+
+      <div class="modal-frame-wrap">
+        <iframe
+          id="adjustFrame"
+          class="modal-frame"
+          title="Page d’ajustement"
+          allow="fullscreen"></iframe>
+      </div>
+
+      <div class="modal-mask" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <script>
+    document.documentElement.classList.add('js');
+
+    const CONFIG = {
+      // Mets ici ton wrapper principal déjà publié
+      gristUrl: 'https://docs.getgrist.com/aSw3QxcECnsx/Suivi-heures-travaillees/p/12?embed=true',
+
+      // true = rendu bord à bord, idéal dans Google Sites
+      edgeToEdge: true,
+
+      // hauteur réelle du bandeau blanc principal
+      maskHeight: 30,
+
+      // ajoute embed=true si absent
+      forceEmbed: true,
+
+      // nettoyage éventuel des paramètresg
+      cleanParams: false,
+
+      // URL affichée dans la modale Ajustement
+      adjustUrl: 'https://docs.getgrist.com/aSw3QxcECnsx/Suivi-heures-travaillees/p/13?embed=true',
+
+      // hauteur du bandeau blanc dans la modale
+      adjustMaskHeight: 30
+    };
+
+    const app = document.getElementById('app');
+    const frame = document.getElementById('gristFrame');
+
+    const adjustModal = document.getElementById('adjustModal');
+    const openAdjustModalBtn = document.getElementById('openAdjustModal');
+    const closeAdjustModalBtn = document.getElementById('closeAdjustModal');
+    const adjustFrame = document.getElementById('adjustFrame');
+    const modalFrameWrap = document.querySelector('.modal-frame-wrap');
+    const modalMask = document.querySelector('.modal-mask');
+
+    document.documentElement.style.setProperty('--mask-height', CONFIG.maskHeight + 'px');
+
+    if (!CONFIG.edgeToEdge) {
+      app.classList.add('card-mode');
+    }
+
+    function buildUrl(rawUrl) {
+      const url = new URL(rawUrl);
+
+      if (CONFIG.cleanParams) {
+        const keep = new Set(['embed', 'theme', 'style', 'page']);
+        [...url.searchParams.keys()].forEach(k => {
+          if (!keep.has(k)) url.searchParams.delete(k);
+        });
+      }
+
+      if (CONFIG.forceEmbed && !url.searchParams.has('embed')) {
+        url.searchParams.set('embed', 'true');
+      }
+
+      return url.toString();
+    }
+
+    function applyModalMaskHeight(px) {
+      modalFrameWrap.style.top = '-' + px + 'px';
+      modalFrameWrap.style.height = 'calc(100% + ' + px + 'px)';
+      modalMask.style.height = px + 'px';
+    }
+
+    frame.src = buildUrl(CONFIG.gristUrl);
+    applyModalMaskHeight(CONFIG.adjustMaskHeight);
+
+    function openAdjustModal() {
+      adjustFrame.src = buildUrl(CONFIG.adjustUrl);
+      adjustModal.classList.add('open');
+      adjustModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeAdjustModal() {
+      adjustModal.classList.remove('open');
+      adjustModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      adjustFrame.src = '';
+    }
+
+    openAdjustModalBtn.addEventListener('click', openAdjustModal);
+    closeAdjustModalBtn.addEventListener('click', closeAdjustModal);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && adjustModal.classList.contains('open')) {
+        closeAdjustModal();
+      }
+    });
+
+    // Aucun clic au travers, et pas de fermeture hors fenêtre
+    adjustModal.addEventListener('click', (e) => {
+      if (e.target === adjustModal) {
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
