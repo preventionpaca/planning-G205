@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ajustements — Morise</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f6f8fb;margin:0;padding:18px;color:#16304f}
+    .layout{display:grid;grid-template-columns:minmax(420px,560px) minmax(480px,1fr);gap:18px;align-items:start}
+    .card{background:#fff;border:1px solid #d7e1ef;border-radius:14px;padding:18px;box-shadow:0 3px 18px rgba(20,40,80,.06)}
+    h2{margin:0 0 6px 0;font-size:28px}.sub{margin:0 0 18px 0;color:#5b6f8f}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(180px,1fr));gap:12px}
+    label{display:block;font-size:13px;font-weight:700;margin:6px 0}
+    input,select,textarea{width:100%;box-sizing:border-box;border:1px solid #b8c8dd;border-radius:10px;padding:10px 12px;font-size:15px;background:#fbfcfe}
+    textarea{min-height:86px;resize:vertical}.row{margin-top:12px}.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+    button{border:none;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer}.primary{background:#2e57d8;color:#fff}.secondary{background:#e5ebf6;color:#17335a}.danger{background:#b63d35;color:#fff}
+    .ok,.err{margin-top:12px;padding:10px 12px;border-radius:10px;display:none}.ok{background:#e7f6ed;color:#0f6231}.err{background:#fdecec;color:#8c1d18;white-space:pre-wrap}
+    .toolbar{display:flex;justify-content:space-between;gap:10px;align-items:end;margin-bottom:12px}.toolbar h3{margin:0;font-size:22px}.pill{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef3fb;color:#456286;font-size:12px;font-weight:700}
+    .listWrap{max-height:70vh;overflow:auto;border:1px solid #dbe3f0;border-radius:12px}table{border-collapse:collapse;width:100%}th,td{font-size:13px;padding:10px 8px;border-bottom:1px solid #e8eef7;vertical-align:top;text-align:left}th{position:sticky;top:0;background:#f7faff;z-index:1}tr:hover{background:#fbfdff}.rowActive{background:#eef4ff !important}
+    .small{font-size:12px;color:#6d7f9f}.typeTag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700;background:#edf2f8;color:#345}
+    .type-Soiree{background:#ffd7b3}.type-WeekEnd{background:#d7e6f7}.type-Salon{background:#cfe8c8}.type-GRIST{background:#29b24a;color:#fff}.type-Permanence{background:#ead8f5}.type-Teletravail{background:#9fdcff}.type-Recuperation{background:#ffc98a}.type-Absence{background:#f7d1d1}.type-Autre{background:#e8e8e8}
+    .actionsCol{display:flex;gap:6px;flex-wrap:wrap}.actionsCol button{padding:6px 10px;border-radius:8px;font-size:12px}
+    .modalBack{position:fixed;inset:0;background:rgba(18,27,45,.45);display:flex;align-items:center;justify-content:center;padding:18px}.modal{width:min(420px,100%);background:#fff;border-radius:16px;padding:20px;border:1px solid #d7e1ef;box-shadow:0 12px 42px rgba(0,0,0,.18)}.hidden{display:none !important}
+    @media (max-width:1100px){.layout{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div id="loginBack" class="modalBack">
+    <div class="modal">
+      <h2 style="font-size:24px;margin-bottom:8px">Identification</h2>
+      <p class="sub">Saisissez le mot de passe de l’agent <strong>Morise</strong>.</p>
+      <label>Mot de passe</label>
+      <input id="password" type="password" placeholder="Mot de passe">
+      <div class="actions"><button class="primary" id="btnLogin">Se connecter</button></div>
+      <div id="loginErr" class="err" style="margin-top:12px"></div>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="card">
+      <h2>Ajustement d'activité</h2>
+      <p class="sub">À gauche, la saisie. À droite, la liste des ajustements déjà saisis pour le même agent.</p>
+      <div class="grid">
+        <div><label>Nom du personnel</label><input id="agentLocked" readonly value="Morise"></div>
+        <div><label>Année scolaire</label><select id="annee"></select></div>
+        <div><label>Date</label><input id="date" type="date"></div>
+        <div><label>Type d'ajustement</label><select id="type"><option value="Soiree">Soirée</option><option value="WeekEnd">Week-end</option><option value="Salon">Salon</option><option value="GRIST">GRIST</option><option value="Permanence">Permanence vacances</option><option value="Teletravail">Télétravail</option><option value="Recuperation">Récupération</option><option value="Absence">Absence</option><option value="Autre">Autre</option></select></div>
+      </div>
+      <div class="grid2 row"><div><label>Heure début</label><input id="start" type="time"></div><div><label>Heure fin</label><input id="end" type="time"></div></div>
+      <div class="grid2 row"><div><label>Volume d'heures</label><input id="volume" type="number" step="0.01" readonly disabled style="background:#eef3f8;color:#5b6f8f;cursor:not-allowed"></div><div><label>Nature / lieu</label><input id="nature" placeholder="Ex. salon de l'orientation, collège X"></div></div>
+      <div class="row"><label>Commentaire</label><textarea id="commentaire" placeholder="Précision utile"></textarea></div>
+      <div class="actions"><button class="primary" id="saveBtn">Enregistrer l'ajustement</button><button class="secondary" id="clearBtn">Vider</button><button class="danger" id="cancelEditBtn" style="display:none">Annuler la modification</button><button class="secondary" id="logoutBtn">Déconnexion</button></div>
+      <div id="ok" class="ok"></div><div id="err" class="err"></div>
+    </div>
+    <div class="card">
+      <div class="toolbar"><div><h3>Historique des ajustements</h3><div class="small">Affichage limité à l’agent courant et à l’année sélectionnée.</div></div><div class="pill" id="countPill">0 ajustement</div></div>
+      <div class="listWrap"><table><thead><tr><th style="width:92px">Date</th><th style="width:110px">Type</th><th style="width:110px">Horaires</th><th style="width:80px">Volume</th><th>Nature / lieu</th><th>Commentaire</th><th style="width:170px">Actions</th></tr></thead><tbody id="listBody"></tbody></table></div>
+    </div>
+  </div>
+<script>
+const CONFIG = { agent: "Morise", webappUrl: "COLLER_ICI_URL_WEBAPP_APPS_SCRIPT", sessionStorageKey: "ajustement_session_Morise" };
+let activeYear = '', selectedYear = '', editRecordId = null, currentRows = [];
+function qs(id){ return document.getElementById(id); }
+function esc(s){ return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+function showBox(id, text){ qs('ok').style.display='none'; qs('err').style.display='none'; const el = qs(id); el.textContent = text; el.style.display='block'; }
+function showOk(t){ showBox('ok', t); } function showErr(t){ showBox('err', t); }
+function readToken(){ return localStorage.getItem(CONFIG.sessionStorageKey) || ''; } function saveToken(t){ localStorage.setItem(CONFIG.sessionStorageKey, t); } function clearToken(){ localStorage.removeItem(CONFIG.sessionStorageKey); }
+function jsonp(params){ return new Promise((resolve, reject) => { const cb = 'cb_' + Date.now() + '_' + Math.floor(Math.random()*100000); window[cb] = (payload) => { try { delete window[cb]; } catch(e){} script.remove(); if(payload && payload.ok) resolve(payload.data); else reject(new Error((payload && payload.error) || 'Erreur inconnue')); }; const q = new URLSearchParams({...params, callback: cb}).toString(); const script = document.createElement('script'); script.src = CONFIG.webappUrl + '?' + q; script.onerror = () => { try { delete window[cb]; } catch(e){} script.remove(); reject(new Error('Impossible de joindre la Web App.')); }; document.body.appendChild(script); }); }
+function computeHours(start, end){ if(!start || !end) return ''; const [sh, sm] = start.split(':').map(Number), [eh, em] = end.split(':').map(Number); if([sh, sm, eh, em].some(v => Number.isNaN(v))) return ''; let mins = (eh*60+em) - (sh*60+sm); if(mins < 0) mins += 24*60; return (mins/60).toFixed(2); }
+function updateVolumeField(){ qs('volume').value = computeHours(qs('start').value, qs('end').value); }
+function clearForm(){ qs('date').value=''; qs('start').value=''; qs('end').value=''; qs('volume').value=''; qs('nature').value=''; qs('commentaire').value=''; qs('type').value='Soiree'; }
+function cancelEdit(){ editRecordId = null; qs('saveBtn').textContent = "Enregistrer l'ajustement"; qs('cancelEditBtn').style.display='none'; clearForm(); }
+function fmtDate(v){ if(!v) return ''; if(/^\d{4}-\d{2}-\d{2}/.test(String(v))){ const s = String(v).slice(0,10).split('-'); return `${s[2]}/${s[1]}/${s[0]}`; } return String(v); }
+function typeLabel(code){ const map = { Soiree:'Soirée', WeekEnd:'Week-end', Salon:'Salon', GRIST:'GRIST', Permanence:'Permanence vacances', Teletravail:'Télétravail', Recuperation:'Récupération', Absence:'Absence', Autre:'Autre' }; return map[code] || code || ''; }
+function renderRows(rows){ currentRows = rows || []; qs('countPill').textContent = `${currentRows.length} ajustement${currentRows.length > 1 ? 's' : ''}`; qs('listBody').innerHTML = currentRows.map(r => `<tr class="${editRecordId === r.id ? 'rowActive' : ''}"><td>${esc(fmtDate(r.Date))}</td><td><span class="typeTag type-${esc(r.TypeAjustement||'Autre')}">${esc(typeLabel(r.TypeAjustement))}</span></td><td>${esc(r.HeureDebut || '')} → ${esc(r.HeureFin || '')}</td><td>${esc(r.VolumeHeures || '')}</td><td>${esc(r.NatureLieu || '')}</td><td>${esc(r.Commentaire || '')}</td><td><div class="actionsCol"><button onclick="editRow(${r.id})">Modifier</button><button onclick="duplicateRow(${r.id})">Dupliquer</button><button class="danger" onclick="deleteRow(${r.id})">Supprimer</button></div></td></tr>`).join(''); }
+async function loadYears(){ const data = await jsonp({action:'years'}); const years = data.years || []; activeYear = data.activeYear || ''; selectedYear = selectedYear || activeYear || (years[0] && years[0].Libelle) || ''; qs('annee').innerHTML = years.map(y => `<option value="${esc(y.Libelle)}">${esc(y.Libelle)}</option>`).join(''); if(selectedYear) qs('annee').value = selectedYear; }
+async function loadList(){ const data = await jsonp({action:'list', sessionToken:readToken(), anneeScolaire:qs('annee').value}); renderRows(data.items || []); }
+function buildPayload(){ return { sessionToken: readToken(), anneeScolaire: qs('annee').value, date: qs('date').value, typeAjustement: qs('type').value, heureDebut: qs('start').value, heureFin: qs('end').value, volumeHeures: qs('volume').value, natureLieu: qs('nature').value, commentaire: qs('commentaire').value }; }
+async function saveAdj(){ try { updateVolumeField(); const p = buildPayload(); if(!p.date || !p.heureDebut || !p.heureFin || !p.volumeHeures) throw new Error('Veuillez compléter la date, les horaires et le volume.'); if(editRecordId){ await jsonp({action:'update', id:editRecordId, ...p}); showOk("Ajustement modifié."); } else { await jsonp({action:'create', ...p}); showOk("Ajustement enregistré."); } cancelEdit(); await loadList(); } catch(err){ showErr(err.message); } }
+function editRow(id){ const r = currentRows.find(x => Number(x.id) === Number(id)); if(!r) return; editRecordId = r.id; qs('annee').value = r.AnneeScolaire || qs('annee').value; qs('date').value = (r.Date || '').slice(0,10); qs('type').value = r.TypeAjustement || 'Soiree'; qs('start').value = r.HeureDebut || ''; qs('end').value = r.HeureFin || ''; qs('volume').value = r.VolumeHeures || ''; qs('nature').value = r.NatureLieu || ''; qs('commentaire').value = r.Commentaire || ''; qs('saveBtn').textContent = "Mettre à jour l'ajustement"; qs('cancelEditBtn').style.display = ''; window.scrollTo({top:0, behavior:'smooth'}); }
+async function duplicateRow(id){ try { await jsonp({action:'duplicate', sessionToken:readToken(), id}); showOk("Ajustement dupliqué."); await loadList(); } catch(err){ showErr(err.message); } }
+async function deleteRow(id){ if(!confirm("Supprimer définitivement cet ajustement ?")) return; try { await jsonp({action:'delete', sessionToken:readToken(), id}); showOk("Ajustement supprimé."); if(editRecordId === id) cancelEdit(); await loadList(); } catch(err){ showErr(err.message); } }
+async function login(){ qs('loginErr').style.display = 'none'; try { const data = await jsonp({action:'login', agent:CONFIG.agent, password:qs('password').value}); saveToken(data.sessionToken); qs('loginBack').classList.add('hidden'); await loadYears(); await loadList(); } catch(err){ qs('loginErr').textContent = err.message; qs('loginErr').style.display = 'block'; } }
+async function restoreSession(){ const token = readToken(); if(!token) return false; try { const data = await jsonp({action:'session', sessionToken:token}); if(String(data.agent||'') !== String(CONFIG.agent)) throw new Error('Session agent invalide.'); qs('loginBack').classList.add('hidden'); await loadYears(); await loadList(); return true; } catch(e){ clearToken(); return false; } }
+async function logout(){ try { await jsonp({action:'logout', sessionToken:readToken()}); } catch(e){} clearToken(); qs('loginBack').classList.remove('hidden'); qs('password').value = ''; }
+document.addEventListener('DOMContentLoaded', async () => { qs('start').addEventListener('input', updateVolumeField); qs('end').addEventListener('input', updateVolumeField); qs('saveBtn').addEventListener('click', saveAdj); qs('clearBtn').addEventListener('click', clearForm); qs('cancelEditBtn').addEventListener('click', cancelEdit); qs('logoutBtn').addEventListener('click', logout); qs('btnLogin').addEventListener('click', login); qs('annee').addEventListener('change', () => { selectedYear = qs('annee').value; loadList(); }); const ok = await restoreSession(); if(!ok) qs('loginBack').classList.remove('hidden'); });
+</script>
+</body>
+</html>
