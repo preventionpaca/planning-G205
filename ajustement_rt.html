@@ -105,9 +105,9 @@ function esc(s){ return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','
 function showBox(id, text){ qs('ok').style.display='none'; qs('err').style.display='none'; const el = qs(id); el.textContent = text; el.style.display='block'; }
 function showOk(t){ showBox('ok', t); }
 function showErr(t){ showBox('err', t); }
-function readToken(){ return localStorage.getItem(CONFIG.sessionStorageKey) || ''; }
-function saveToken(t){ localStorage.setItem(CONFIG.sessionStorageKey, t); }
-function clearToken(){ localStorage.removeItem(CONFIG.sessionStorageKey); }
+function readToken(){ return sessionStorage.getItem(CONFIG.sessionStorageKey) || ''; }
+function saveToken(t){ sessionStorage.setItem(CONFIG.sessionStorageKey, t); }
+function clearToken(){ sessionStorage.removeItem(CONFIG.sessionStorageKey); }
 
 function jsonp(params){
   return new Promise((resolve, reject) => {
