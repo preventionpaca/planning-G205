@@ -289,7 +289,17 @@ async function duplicateRow(id){
 }
 
 async function deleteRow(id){
-  if(!confirm("Supprimer définitivement cet ajustement ?")) return;
+  const r = currentRows.find(x => Number(x.id) === Number(id));
+  if(!r) return;
+
+  const message =
+    "Supprimer définitivement cet ajustement ?\n\n" +
+    "Date : " + fmtDate(r.Date) + "\n" +
+    "Type : " + typeLabel(r.TypeAjustement) + "\n" +
+    "Volume : " + (r.VolumeHeures || '') + " h";
+
+  if(!confirm(message)) return;
+
   try {
     await jsonp({action:'delete', sessionToken:readToken(), id});
     showOk("Ajustement supprimé.");
