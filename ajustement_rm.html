@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Ajustements — Thémines</title>
+  <title>Ajustements — Morise</title>
   <style>
     body{font-family:Arial,sans-serif;background:#f6f8fb;margin:0;padding:18px;color:#16304f}
     .layout{display:grid;grid-template-columns:minmax(420px,560px) minmax(480px,1fr);gap:18px;align-items:start}
@@ -289,7 +289,17 @@ async function duplicateRow(id){
 }
 
 async function deleteRow(id){
-  if(!confirm("Supprimer définitivement cet ajustement ?")) return;
+  const r = currentRows.find(x => Number(x.id) === Number(id));
+  if(!r) return;
+
+  const message =
+    "Supprimer définitivement cet ajustement ?\n\n" +
+    "Date : " + fmtDate(r.Date) + "\n" +
+    "Type : " + typeLabel(r.TypeAjustement) + "\n" +
+    "Volume : " + (r.VolumeHeures || '') + " h";
+
+  if(!confirm(message)) return;
+
   try {
     await jsonp({action:'delete', sessionToken:readToken(), id});
     showOk("Ajustement supprimé.");
